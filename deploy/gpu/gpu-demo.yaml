@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-box-gpu-demo
+  namespace: ai-box
+  labels:
+    app: ai-box-gpu-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-box-gpu-demo
+  template:
+    metadata:
+      labels:
+        app: ai-box-gpu-demo
+    spec:
+      nodeSelector:
+        ai-box.example.com/gpu: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: gpu-demo
+          # Replace with a validated CUDA workload image that actually uses CUDA.
+          image: nvcr.io/nvidia/cuda:12.4.1-base-ubuntu22.04
+          command: ["bash", "-lc", "nvidia-smi && sleep infinity"]
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+              nvidia.com/gpu: 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
