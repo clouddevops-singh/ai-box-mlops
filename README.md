@@ -82,7 +82,7 @@ curl -X POST http://127.0.0.1:8080/chat \
   -d '{"message":"Explain how GPU scheduling works in Kubernetes."}'
 ```
 
-The sample uses a deterministic local graph and makes no external model calls. Configure a real model adapter only after reviewing [security guidance](docs/security.md).
+The sample defaults to a deterministic local graph and makes no external model calls. To use an OpenAI-compatible endpoint, create the `ai-box-model-credentials` secret, set `MODEL_BACKEND=openai` in the deployment, and allow only the required egress after reviewing [security guidance](docs/security.md).
 
 ### 5. Enable GPU scheduling (optional)
 

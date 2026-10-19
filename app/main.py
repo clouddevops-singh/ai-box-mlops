@@ -1,8 +1,10 @@
+import os
 from typing import TypedDict
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 
 
@@ -12,8 +14,18 @@ class ChatState(TypedDict):
 
 
 def respond(state: ChatState) -> ChatState:
-    """Deterministic placeholder node; replace with an approved model adapter."""
+    """Use a configured OpenAI-compatible chat endpoint or a deterministic local echo."""
     question = state["messages"][-1].content
+    if os.getenv("MODEL_BACKEND", "echo").lower() == "openai":
+        model = ChatOpenAI(
+            model=os.getenv("CHAT_MODEL", "gpt-4o-mini"),
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=os.getenv("OPENAI_BASE_URL") or None,
+            timeout=30,
+            max_retries=1,
+        )
+        response = model.invoke(state["messages"])
+        return {**state, "answer": str(response.content)}
     return {**state, "answer": f"AI Box received: {question}"}
 
 

@@ -31,6 +31,22 @@ spec:
             - name: http
               containerPort: 8000
           env:
+            - name: MODEL_BACKEND
+              value: "echo"
+            - name: CHAT_MODEL
+              value: "gpt-4o-mini"
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-box-model-credentials
+                  key: api-key
+                  optional: true
+            - name: OPENAI_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ai-box-model-credentials
+                  key: base-url
+                  optional: true
             - name: PYTHONDONTWRITEBYTECODE
               value: "1"
             - name: PYTHONUNBUFFERED
